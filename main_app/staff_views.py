@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
@@ -6,6 +7,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import (HttpResponseRedirect, get_object_or_404,redirect, render)
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+
+import cv2
+import numpy as np
+from face_recognition import load_image_file, face_encodings, compare_faces
+from PIL import Image
 
 from .forms import *
 from .models import *
@@ -54,21 +60,53 @@ def staff_take_attendance(request):
 def get_students(request):
     subject_id = request.POST.get('subject')
     session_id = request.POST.get('session')
+    date = request.POST.get('date')
+    class_photo = request.FILES.get('class_photo')
+
     try:
         subject = get_object_or_404(Subject, id=subject_id)
         session = get_object_or_404(Session, id=session_id)
-        students = Student.objects.filter(
-            course_id=subject.course.id, session=session)
+        students = Student.objects.filter(course_id=subject.course.id, session=session)
+
+        # Read the uploaded class photo and detect faces
+        class_photo_array = np.frombuffer(class_photo.read(), np.uint8)
+        class_photo_image = cv2.imdecode(class_photo_array, cv2.IMREAD_COLOR)
+
+        # Convert image to RGB for face_recognition
+        class_photo_rgb = cv2.cvtColor(class_photo_image, cv2.COLOR_BGR2RGB)
+
+        # Detect faces and encode them
+        class_photo_faces = face_encodings(class_photo_rgb)
+
         student_data = []
         for student in students:
+            profile_pic = student.admin.profile_pic
+            profile_pic_path = f"C:/Rajesh/Django Project/Attendance-AI{str(profile_pic)}"
+            # profile_pic_path = os.path.join(settings.MEDIA_ROOT, str(profile_pic))
+            profile_pic_image = load_image_file(profile_pic_path)
+
+            # Encode the profile picture
+            profile_pic_face_encodings = face_encodings(profile_pic_image)
+
+            if profile_pic_face_encodings:
+                profile_pic_encoding = profile_pic_face_encodings[0]
+
+                # Compare detected faces with the student's profile picture
+                is_present = any(compare_faces(class_photo_faces, profile_pic_encoding))
+            else:
+                is_present = False
+
             data = {
-                    "id": student.id,
-                    "name": student.admin.last_name + " " + student.admin.first_name
-                    }
+                "id": student.id,
+                "name": student.admin.first_name + " " + student.admin.last_name,
+                "present": is_present,
+            }
             student_data.append(data)
+
         return JsonResponse(json.dumps(student_data), content_type='application/json', safe=False)
     except Exception as e:
-        return e
+        print(e)
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 

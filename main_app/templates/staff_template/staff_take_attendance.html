@@ -39,6 +39,17 @@
                                 {% endfor %}
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label>Attendance Date</label>
+                            <input type="date" class="form-control" name="attendance_date" id="attendance_date">
+                        </div>
+                    
+                        <div class="form-group">
+                            <label>Class Photo</label>
+                            <input type="file" class="form-control" name="class_photo" id="class_photo" accept="image/*">
+                        </div>
+
                         {% comment %}
 
                         <div>
@@ -75,36 +86,45 @@
         $("#fetch_student").click(function () {
             var subject = $("#subject").val()
             var session = $("#session").val()
+            var attendance_date = $('#attendance_date').val()
+            var class_photo = $('#class_photo')[0].files[0];
+            if (attendance_date.length < 10){
+                    alert("Select date")
+                    return false;
+                }
             $("#student_data").html(null)
 if (subject.length  == 0 || session.length == 0){
     alert("Please select session and subject");
     return false;
 }
+        var formData = new FormData(); // Create a FormData object
+        formData.append('subject', subject);
+        formData.append('session', session);
+        formData.append('date', attendance_date);
+        formData.append('class_photo', class_photo); // Append the file data
             $.ajax({
                 url: "{% url 'get_students' %}",
                 type: 'POST',
-                data: {
-                    subject: subject,
-                    session: session
-                }
+                data: formData,
+                processData: false,
+                contentType: false
             }).done(function (response) {
                 var json_data = JSON.parse(response)
                 if (json_data.length < 1) {
                     alert("No data to display")
                 } else {
-                    var div_data = "<hr/><div class='form-group'></div><div class='form-group'> <label>Attendance Date</label><input type='date' class='form-control' name='attendance_date' id='attendance_date' ><div class='row'>"
-
+                    var div_data = "<hr/><div class='row'>"
                     for (key in json_data) {
-                        div_data += "<div class='col-lg-3'><div class='form-check custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' checked='checked' name='student_data[]' value=" + json_data[key]['id'] + " id='checkbox" + json_data[key]['id'] + "' /> <label for='checkbox" + json_data[key]['id'] + "' class='custom-control-label'>" + json_data[key]['name'] + "</label></div> </div>"
+                        var checked = json_data[key]['present'] ? "checked='checked'" : "";
+                        div_data += "<div class='col-lg-3'><div class='form-check custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' "+checked+" name='student_data[]' value=" + json_data[key]['id'] + " id='checkbox" + json_data[key]['id'] + "' /> <label for='checkbox" + json_data[key]['id'] + "' class='custom-control-label'>" + json_data[key]['name'] + "</label></div> </div>"
                     }
                     div_data += "</div></div>"
-                    div_data += "<div class='form-group'><button id='save_attendance' class='btn btn-success' type='button'>Save Attendance</button></div>"
+                    div_data += "<br><br><div class='form-group'><button id='save_attendance' class='btn btn-success' type='button'>Save Attendance</button></div>"
                     $("#student_data").html(div_data)
                 }
             }).fail(function (response) {
                 alert("Error in fetching students")
             })
-
 
             $(document).on('click', '#save_attendance', function () {
                 $(this).attr("disabled","disabled")
@@ -117,11 +137,6 @@ if (subject.length  == 0 || session.length == 0){
                     return {'id':$(this).val(), 'status': 0};
     
                 }).get()
-                var attendance_date = $('#attendance_date').val()
-                if (attendance_date.length < 10){
-                    alert("Select date")
-                    return false;
-                }
                 student_data = JSON.stringify(student_data)
                 $.ajax({
                     url: "{% url 'save_attendance' %}",

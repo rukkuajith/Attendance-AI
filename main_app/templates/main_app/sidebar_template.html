@@ -44,7 +44,7 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     {% url 'admin_notify_staff' as admin_notify_staff %}
                     <a href="{{admin_notify_staff}}" class="nav-link {% if admin_notify_staff == request.path %} active {% endif %}">
                         <i class="nav-icon fas fa-th"></i>
@@ -63,7 +63,7 @@
 
                         </p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     {% url 'add_staff' as add_staff %}
                     <a href="{{add_staff}}" class="nav-link {% if add_staff == request.path %} active {% endif %}">
@@ -187,7 +187,7 @@
                             </p>
                         </a>
                     </li>  
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 {% url 'student_feedback_message' as student_feedback_message %}
 
                 <a href="{{ student_feedback_message }}" class="nav-link  {% if student_feedback_message == request.path %} active {% endif %}">
@@ -230,7 +230,7 @@
                             
                         </p>
                     </a>
-                </li>
+                </li> -->
                 
 {% elif request.user.user_type == '2' %}
     <!-- Brand Logo -->
@@ -278,7 +278,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     {% url 'staff_add_result' as staff_add_result %}
                     <a href="{{staff_add_result}}" class="nav-link {% if staff_add_result == request.path %} active {% endif %}">
                         <i class="nav-icon fas fa-th"></i>
@@ -297,7 +297,7 @@
 
                         </p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     {% url 'staff_take_attendance' as staff_take_attendance %}
                     <a href="{{staff_take_attendance}}" class="nav-link {% if staff_take_attendance == request.path %} active {% endif %}">
@@ -318,7 +318,7 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     {% url 'staff_view_notification' as staff_view_notification %}
                     <a href="{{staff_view_notification}}" class="nav-link {% if staff_view_notification == request.path %} active {% endif %}">
                         <i class="nav-icon fas fa-th"></i>
@@ -349,7 +349,7 @@
 
                         </p>
                     </a>
-                </li>
+                </li> -->
           
 {% else %}
     <!-- Brand Logo -->
@@ -398,7 +398,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     {% url 'student_view_result' as student_view_result %}
                     <a href="{% url 'student_view_result' %}" class="nav-link {% if student_view_result == request.path %} active {% endif %}">
                         <i class="nav-icon fas fa-th"></i>
@@ -406,7 +406,7 @@
                             View Results
                         </p>
                     </a>
-                </li>
+                </li> -->
           
                 <li class="nav-item">
                     {% url 'student_view_attendance' as student_view_attendance %}
@@ -415,7 +415,7 @@
                         <p>View Attendance</p>
                     </a>
                 </li>
-
+<!-- 
                 <li class="nav-item">
                     {% url 'student_view_notification' as student_view_notification %}
                     <a href="{{student_view_notification}}" class="nav-link {% if student_view_notification == request.path %} active {% endif %}">
@@ -436,9 +436,9 @@
 
                         </p>
                     </a>
-                </li>
+                </li> -->
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     {% url 'student_feedback' as student_feedback %}
                     <a href="{{student_feedback}}" class="nav-link {% if student_feedback == request.path %} active {% endif %}">
                         <i class="nav-icon fas fa-th"></i>
@@ -447,7 +447,7 @@
 
                         </p>
                     </a>
-                </li>
+                </li> -->
           
 {% endif %}
 
